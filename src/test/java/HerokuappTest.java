@@ -64,8 +64,8 @@ public class HerokuappTest {
         Assert.assertTrue(checkbox2.isSelected());
 
     }
-    //*[@id="checkboxes"]
-//*[@id="checkboxes"]/input[1]
+
+
     @AfterMethod
     public void after(){
         webDriver.quit();
