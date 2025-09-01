@@ -1,7 +1,6 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
@@ -10,6 +9,8 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;
@@ -108,6 +109,44 @@ public class HerokuappTest {
         }
         return assumedFile;
 
+    }
+    @Test
+    public void fileUpload() throws IOException {
+        webDriver.get("https://the-internet.herokuapp.com/upload");
+        File file = new File("/Users/vaishnavipukale/Downloads/kote.jpg");
+        WebElement selectFile = webDriver.findElement(By.id("file-upload"));
+        selectFile.sendKeys(file.getAbsolutePath());
+        System.out.println("Uploaded file: " + file.getAbsolutePath());
+        WebElement uploadFile = webDriver.findElement(By.id("file-submit"));
+        uploadFile.click();
+        WebElement fileUploaded = webDriver.findElement(By.id("uploaded-files"));
+        Assert.assertEquals(fileUploaded.getText(),"kote.jpg");
+    }
+    @Test
+    public void alert(){
+        webDriver.get("https://the-internet.herokuapp.com/entry_ad");
+        WebElement clickHere = webDriver.findElement(By.id("restart-ad"));
+        clickHere.click();
+        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
+        WebElement modal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal")));
+        WebElement closeButton = webDriver.findElement(By.xpath("//*[@id='modal']/div[2]/div[3]/p"));
+        closeButton.click();
+        Boolean modalClosed = wait.until(ExpectedConditions.invisibilityOf(modal));
+        Assert.assertTrue(modalClosed,"Modal didn't closed");
+        System.out.println("Modal closed successfully");
+    }
+    @Test
+    public void alert1(){
+        webDriver.get("https://the-internet.herokuapp.com/context_menu");
+        WebElement boxRightClick = webDriver.findElement(By.id("hot-spot"));
+        Actions actions = new Actions(webDriver);
+        actions.contextClick(boxRightClick).perform();
+        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(3));
+        wait.until(ExpectedConditions.alertIsPresent());
+        Alert alert = webDriver.switchTo().alert();
+        System.out.println("Alert says: " + alert.getText());
+        alert.accept();
+        System.out.println("Alert closed successfully");
     }
 
 
