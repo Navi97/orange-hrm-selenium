@@ -3,12 +3,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import java.io.File;
+import java.io.IOException;
+import java.util.function.Function;
 
 import java.sql.Driver;
 import java.time.Duration;
@@ -64,6 +68,49 @@ public class HerokuappTest {
         Assert.assertTrue(checkbox2.isSelected());
 
     }
+    public File waitForFileDownload(String downloadPath, int timeoutSeconds) {
+        File dir = new File(downloadPath);
+        FluentWait<File> wait = new FluentWait<File>(dir)
+                .withTimeout(Duration.ofSeconds(timeoutSeconds))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(Exception.class);
+
+        return wait.until((file) -> {
+            File latest = getLatestModifiedFile(downloadPath);
+            return (latest != null && !latest.getName().endsWith(".crdownload")) ? latest : null;
+        });
+    }
+    @Test
+    public void filedownload() throws IOException {
+        webDriver.get("https://the-internet.herokuapp.com/download");
+        WebElement clickImage = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/a[1]"));
+        clickImage.click();
+        String downloadPath = "/Users/vaishnavipukale/Downloads";
+
+        File file = waitForFileDownload(downloadPath , 15);
+        System.out.println(file.getCanonicalFile().getName());
+        Assert.assertTrue(file.getCanonicalFile().getName().contains("kote"));
+        System.out.println("File download successful ✅");
+    }
+
+    private File getLatestModifiedFile(String downloadPath) {
+        File dir = new File(downloadPath);
+        File[] files = dir.listFiles();
+        if(files.length == 0 || files == null){
+            return null;
+        }
+        File assumedFile = files[0];
+        for(int i=0;i< files.length;i++){
+            if(assumedFile.lastModified() < files[i].lastModified()){
+                assumedFile = files[i];
+            }
+
+        }
+        return assumedFile;
+
+    }
+
+
 
 
     @AfterMethod
