@@ -13,6 +13,8 @@ import org.testng.annotations.Test;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import java.sql.Driver;
@@ -39,7 +41,6 @@ public class HerokuappTest {
                 ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"elements\"]/button"))
         );
         Assert.assertTrue(isInvisible, "Delete button should be invisible after clicking!");
-
     }
     @Test
     public void dropdown(){
@@ -51,7 +52,6 @@ public class HerokuappTest {
         String selectedOption = select.getFirstSelectedOption().getText();
         System.out.println("Selected option is: " + selectedOption);
         Assert.assertEquals(selectedOption, "Option 1", "Dropdown selection is not as expected!");
-
     }
     @Test
     public void checkbox(){
@@ -67,13 +67,12 @@ public class HerokuappTest {
         Assert.assertFalse(checkbox2.isSelected());
         checkbox2.click();
         Assert.assertTrue(checkbox2.isSelected());
-
     }
     public File waitForFileDownload(String downloadPath, int timeoutSeconds) {
         File dir = new File(downloadPath);
         FluentWait<File> wait = new FluentWait<File>(dir)
                 .withTimeout(Duration.ofSeconds(timeoutSeconds))
-                .pollingEvery(Duration.ofSeconds(1))
+                .pollingEvery(Duration.ofSeconds(3))
                 .ignoring(Exception.class);
 
         return wait.until((file) -> {
@@ -84,31 +83,27 @@ public class HerokuappTest {
     @Test
     public void filedownload() throws IOException {
         webDriver.get("https://the-internet.herokuapp.com/download");
-        WebElement clickImage = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/a[1]"));
+        WebElement clickImage = webDriver.findElement(By.linkText("kote.jpg"));
         clickImage.click();
         String downloadPath = "/Users/vaishnavipukale/Downloads";
-
         File file = waitForFileDownload(downloadPath , 15);
         System.out.println(file.getCanonicalFile().getName());
         Assert.assertTrue(file.getCanonicalFile().getName().contains("kote"));
         System.out.println("File download successful ✅");
     }
-
     private File getLatestModifiedFile(String downloadPath) {
         File dir = new File(downloadPath);
         File[] files = dir.listFiles();
-        if(files.length == 0 || files == null){
+        if((files.length == 0) || (files == null)){
             return null;
         }
         File assumedFile = files[0];
-        for(int i=0;i< files.length;i++){
-            if(assumedFile.lastModified() < files[i].lastModified()){
-                assumedFile = files[i];
+        for (File file : files) {
+            if (assumedFile.lastModified() < file.lastModified()) {
+                assumedFile = file;
             }
-
         }
         return assumedFile;
-
     }
     @Test
     public void fileUpload() throws IOException {
@@ -148,10 +143,64 @@ public class HerokuappTest {
         alert.accept();
         System.out.println("Alert closed successfully");
     }
-
-
-
-
+    @Test
+    public void hover() {
+        webDriver.get("https://the-internet.herokuapp.com/hovers");
+        WebElement user1 = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/div[1]"));
+        Actions actions = new Actions(webDriver);
+        actions.moveToElement(user1).perform();
+        WebElement clickViewProfile = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/div[1]/div/a"));
+        clickViewProfile.click();
+        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(3));
+        WebElement notFoundMsg = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Not Found']"))
+        );
+        String actualText = notFoundMsg.getText();
+        Assert.assertEquals(actualText, "Not Found", "Profile page did not show 'Not Found'");
+    }
+    @Test
+    public void keyPresses(){
+        webDriver.get("https://the-internet.herokuapp.com/key_presses");
+        WebElement keyPress = webDriver.findElement(By.id("target"));
+        keyPress.sendKeys(Keys.RETURN);
+        WebElement result = webDriver.findElement(By.id("result"));
+        Assert.assertEquals(result.getText(),"You entered: ENTER");
+    }
+    @Test
+    public void javascriptAlert(){
+        webDriver.get("https://the-internet.herokuapp.com/javascript_alerts");
+        WebElement jsAlert1 = webDriver.findElement(By.xpath("//button[text()='Click for JS Alert']"));
+        jsAlert1.click();
+        Alert alert = webDriver.switchTo().alert();
+        System.out.println("Alert says: " + alert.getText());
+        alert.accept();
+        System.out.println("Alert closed successfully");
+        WebElement result = webDriver.findElement(By.id("result"));
+        Assert.assertEquals(result.getText(),"You successfully clicked an alert");
+        WebElement jsAlert2 = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/ul/li[2]/button"));
+        jsAlert2.click();
+        Alert alert2 = webDriver.switchTo().alert();
+        alert2.dismiss();
+        Assert.assertEquals(result.getText(),"You clicked: Cancel");
+        WebElement jsAlert3 = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/ul/li[3]/button"));
+        jsAlert3.click();
+        Alert alert3 = webDriver.switchTo().alert();
+        alert3.sendKeys("Hello");
+        alert3.accept();
+        Assert.assertEquals(result.getText(),"You entered: Hello");
+    }
+    @Test
+    public void jQueryUi(){
+        webDriver.get("https://the-internet.herokuapp.com/jqueryui/menu#");
+        Actions actions = new Actions(webDriver);
+        WebElement clickEnable = webDriver.findElement(By.id("ui-id-3"));
+        actions.moveToElement(clickEnable).perform();
+        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
+        WebElement clickDownloads = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ui-id-4")));
+        actions.moveToElement(clickDownloads).perform();
+        WebElement clickPdf = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ui-id-5")));
+        clickPdf.click();
+    }
     @AfterMethod
     public void after(){
         webDriver.quit();
