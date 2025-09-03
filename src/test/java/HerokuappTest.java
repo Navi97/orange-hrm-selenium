@@ -1,25 +1,18 @@
-import io.cucumber.java.en_old.Ac;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-import java.sql.Driver;
 import java.time.Duration;
 
 public class HerokuappTest {
@@ -72,7 +65,7 @@ public class HerokuappTest {
     }
     public File waitForFileDownload(String downloadPath, int timeoutSeconds) {
         File dir = new File(downloadPath);
-        FluentWait<File> wait = new FluentWait<File>(dir)
+        FluentWait<File> wait = new FluentWait<>(dir)
                 .withTimeout(Duration.ofSeconds(timeoutSeconds))
                 .pollingEvery(Duration.ofSeconds(5))
                 .ignoring(Exception.class);
@@ -98,7 +91,7 @@ public class HerokuappTest {
     private File getLatestModifiedFile(String downloadPath) {
         File dir = new File(downloadPath);
         File[] files = dir.listFiles();
-        if((files.length == 0) || (files == null)){
+        if((files == null) || (files.length == 0)){
             return null;
         }
         File assumedFile = files[0];
@@ -110,16 +103,16 @@ public class HerokuappTest {
         return assumedFile;
     }
     @Test
-    public void fileUpload() throws IOException {
+    public void fileUpload() {
         webDriver.get("https://the-internet.herokuapp.com/upload");
-        File file = new File("/Users/vaishnavipukale/Downloads/kote.jpg");
+        File file = new File(  "src/main/resources/menu.pdf");
         WebElement selectFile = webDriver.findElement(By.id("file-upload"));
         selectFile.sendKeys(file.getAbsolutePath());
         System.out.println("Uploaded file: " + file.getAbsolutePath());
         WebElement uploadFile = webDriver.findElement(By.id("file-submit"));
         uploadFile.click();
         WebElement fileUploaded = webDriver.findElement(By.id("uploaded-files"));
-        Assert.assertEquals(fileUploaded.getText(),"kote.jpg");
+        Assert.assertEquals(fileUploaded.getText(),"menu.pdf");
     }
     @Test
     public void alert(){
@@ -166,9 +159,9 @@ public class HerokuappTest {
     public void keyPresses(){
         webDriver.get("https://the-internet.herokuapp.com/key_presses");
         WebElement keyPress = webDriver.findElement(By.id("target"));
-        keyPress.sendKeys(Keys.RETURN);
+        keyPress.sendKeys(Keys.TAB);
         WebElement result = webDriver.findElement(By.id("result"));
-        Assert.assertEquals(result.getText(),"You entered: ENTER");
+        Assert.assertEquals(result.getText(),"You entered: TAB");
     }
     @Test
     public void javascriptAlert(){
@@ -224,8 +217,20 @@ public class HerokuappTest {
         Actions actions = new Actions(webDriver);
         actions.scrollByAmount(0,500).perform();
     }
+
     @AfterMethod
-    public void after(){
+    public void captureScreenshot(ITestResult result) {
+        if (ITestResult.FAILURE == result.getStatus()) {
+            try {
+                TakesScreenshot ts = (TakesScreenshot) webDriver;
+                File src = ts.getScreenshotAs(OutputType.FILE);
+                String path = "target/screenshots/" + result.getName() + ".png";
+                FileUtils.copyFile(src, new File(path));
+                System.out.println("📸 Screenshot saved: " + path);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         webDriver.quit();
     }
 }
