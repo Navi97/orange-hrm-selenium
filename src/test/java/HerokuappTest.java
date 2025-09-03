@@ -1,5 +1,7 @@
+import io.cucumber.java.en_old.Ac;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -72,23 +74,25 @@ public class HerokuappTest {
         File dir = new File(downloadPath);
         FluentWait<File> wait = new FluentWait<File>(dir)
                 .withTimeout(Duration.ofSeconds(timeoutSeconds))
-                .pollingEvery(Duration.ofSeconds(3))
+                .pollingEvery(Duration.ofSeconds(5))
                 .ignoring(Exception.class);
 
         return wait.until((file) -> {
             File latest = getLatestModifiedFile(downloadPath);
-            return (latest != null && !latest.getName().endsWith(".crdownload")) ? latest : null;
+            return (latest != null && !latest.getName().endsWith(".crdownload")) && !latest.getName().startsWith(".com.google") ? latest : null;
         });
     }
     @Test
     public void filedownload() throws IOException {
         webDriver.get("https://the-internet.herokuapp.com/download");
-        WebElement clickImage = webDriver.findElement(By.linkText("kote.jpg"));
-        clickImage.click();
+        WebElement element = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/a[1]"));
+        String text = element.getText().split("\\.")[0];
+        System.out.println(text);
+        element.click();
         String downloadPath = "/Users/vaishnavipukale/Downloads";
         File file = waitForFileDownload(downloadPath , 15);
         System.out.println(file.getCanonicalFile().getName());
-        Assert.assertTrue(file.getCanonicalFile().getName().contains("kote"));
+        Assert.assertTrue(file.getCanonicalFile().getName().contains(text));
         System.out.println("File download successful ✅");
     }
     private File getLatestModifiedFile(String downloadPath) {
@@ -190,7 +194,7 @@ public class HerokuappTest {
         Assert.assertEquals(result.getText(),"You entered: Hello");
     }
     @Test
-    public void jQueryUi(){
+    public void jQueryUi() throws IOException {
         webDriver.get("https://the-internet.herokuapp.com/jqueryui/menu#");
         Actions actions = new Actions(webDriver);
         WebElement clickEnable = webDriver.findElement(By.id("ui-id-3"));
@@ -200,6 +204,25 @@ public class HerokuappTest {
         actions.moveToElement(clickDownloads).perform();
         WebElement clickPdf = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ui-id-5")));
         clickPdf.click();
+        String downloadPath = "/Users/vaishnavipukale/Downloads";
+        File file = waitForFileDownload(downloadPath , 15);
+        System.out.println(file.getCanonicalFile().getName());
+        Assert.assertTrue(file.getCanonicalFile().getName().contains("menu"));
+        System.out.println("File download successful ✅");
+    }
+    @Test
+    public void dragAndDrop(){
+        webDriver.get("https://the-internet.herokuapp.com/drag_and_drop");
+        WebElement columnA = webDriver.findElement(By.id("column-a"));
+        WebElement columnB = webDriver.findElement(By.id("column-b"));
+        Actions actions = new Actions(webDriver);
+        actions.dragAndDrop(columnA,columnB).perform();
+    }
+    @Test
+    public void scroll(){
+        webDriver.get("https://the-internet.herokuapp.com/infinite_scroll");
+        Actions actions = new Actions(webDriver);
+        actions.scrollByAmount(0,500).perform();
     }
     @AfterMethod
     public void after(){
