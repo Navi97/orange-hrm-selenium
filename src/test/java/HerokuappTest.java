@@ -24,6 +24,7 @@ public class HerokuappTest {
     CheckboxPage checkboxPage;
     FiledownloadPage filedownloadPage;
     FileuploadPage fileuploadPage;
+    AlertPage alertPage;
 
     @BeforeMethod
     public void before(){
@@ -35,11 +36,11 @@ public class HerokuappTest {
         checkboxPage = new CheckboxPage(webDriver);
         filedownloadPage = new FiledownloadPage(webDriver);
         fileuploadPage = new FileuploadPage(webDriver);
+        alertPage = new AlertPage(webDriver);
     }
     @Test
     public void addElement(){
         addRemoveElementsPage.visit();
-        System.out.println(addRemoveElementsPage.title());
         addRemoveElementsPage.addButton().click();
         addRemoveElementsPage.removeButton().click();
         boolean isInvisible = addRemoveElementsPage.isInvisible(addRemoveElementsPage.removeButtonLocator());
@@ -78,16 +79,11 @@ public class HerokuappTest {
     }
     @Test
     public void alert(){
-        webDriver.get("https://the-internet.herokuapp.com/entry_ad");
-        WebElement clickHere = webDriver.findElement(By.id("restart-ad"));
-        clickHere.click();
-        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
-        WebElement modal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal")));
-        WebElement closeButton = webDriver.findElement(By.xpath("//*[@id='modal']/div[2]/div[3]/p"));
-        closeButton.click();
-        Boolean modalClosed = wait.until(ExpectedConditions.invisibilityOf(modal));
-        Assert.assertTrue(modalClosed,"Modal didn't closed");
-        System.out.println("Modal closed successfully");
+        alertPage.visit();
+        alertPage.clickHereButton().click();
+        alertPage.modalVisible();
+        alertPage.closeButton().click();
+        Assert.assertTrue(alertPage.modalInvisible(),"Modal didn't closed");
     }
     @Test
     public void alert1(){
