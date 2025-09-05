@@ -1,4 +1,5 @@
 import org.apache.commons.io.FileUtils;
+import org.example.pageObject.AddRemoveElementsPage;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -17,24 +18,22 @@ import java.time.Duration;
 
 public class HerokuappTest {
     private WebDriver webDriver;
+    AddRemoveElementsPage addRemoveElementsPage;
+
     @BeforeMethod
     public void before(){
         webDriver = new ChromeDriver();
         webDriver.manage().window().maximize();
         webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        addRemoveElementsPage = new AddRemoveElementsPage(webDriver);
     }
     @Test
     public void addElement(){
-        webDriver.get("https://the-internet.herokuapp.com/add_remove_elements/");
-        System.out.println(webDriver.getTitle());
-        WebElement clickAddButton = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/button"));
-        clickAddButton.click();
-        WebElement clickRemoveButton = webDriver.findElement(By.xpath("//*[@id=\"elements\"]/button"));
-        clickRemoveButton.click();
-        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(3));
-        boolean isInvisible = wait.until(
-                ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id=\"elements\"]/button"))
-        );
+        addRemoveElementsPage.visit();
+        System.out.println(addRemoveElementsPage.title());
+        addRemoveElementsPage.addButton().click();
+        addRemoveElementsPage.removeButton().click();
+        boolean isInvisible = addRemoveElementsPage.isInvisible(addRemoveElementsPage.removeButtonLocator());
         Assert.assertTrue(isInvisible, "Delete button should be invisible after clicking!");
     }
     @Test
