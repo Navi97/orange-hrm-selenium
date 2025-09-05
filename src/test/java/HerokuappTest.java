@@ -77,7 +77,6 @@ public class HerokuappTest {
         Assert.assertTrue(uploadFileSection.getText().contains(file.getCanonicalFile().getName()));
     }
     @Test
-
     public void alert(){
         webDriver.get("https://the-internet.herokuapp.com/entry_ad");
         WebElement clickHere = webDriver.findElement(By.id("restart-ad"));

@@ -20,7 +20,7 @@ public class FileuploadPage {
     }
 
     public void upload(File file) {
-        select(file);
+        this.select(file);
         this.submit().click();
     }
 
