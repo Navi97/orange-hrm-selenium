@@ -1,8 +1,5 @@
 import org.apache.commons.io.FileUtils;
-import org.example.pageObject.AddRemoveElementsPage;
-import org.example.pageObject.CheckboxPage;
-import org.example.pageObject.DropdownPage;
-import org.example.pageObject.FiledownloadPage;
+import org.example.pageObject.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -26,6 +23,7 @@ public class HerokuappTest {
     DropdownPage dropdownPage;
     CheckboxPage checkboxPage;
     FiledownloadPage filedownloadPage;
+    FileuploadPage fileuploadPage;
 
     @BeforeMethod
     public void before(){
@@ -36,6 +34,7 @@ public class HerokuappTest {
         dropdownPage = new DropdownPage(webDriver);
         checkboxPage = new CheckboxPage(webDriver);
         filedownloadPage = new FiledownloadPage(webDriver);
+        fileuploadPage = new FileuploadPage(webDriver);
     }
     @Test
     public void addElement(){
@@ -70,18 +69,15 @@ public class HerokuappTest {
         Assert.assertTrue(downloadedFileName.contains(text),"File download assertion failed: " + downloadedFileName + " " + text);
     }
     @Test
-    public void fileUpload() {
-        webDriver.get("https://the-internet.herokuapp.com/upload");
+    public void fileUpload() throws IOException {
+        fileuploadPage.visit();
         File file = new File(  "src/main/resources/menu.pdf");
-        WebElement selectFile = webDriver.findElement(By.id("file-upload"));
-        selectFile.sendKeys(file.getAbsolutePath());
-        System.out.println("Uploaded file: " + file.getAbsolutePath());
-        WebElement uploadFile = webDriver.findElement(By.id("file-submit"));
-        uploadFile.click();
-        WebElement fileUploaded = webDriver.findElement(By.id("uploaded-files"));
-        Assert.assertEquals(fileUploaded.getText(),"menu.pdf");
+        fileuploadPage.upload(file);
+        WebElement uploadFileSection = fileuploadPage.uploadFileSection();
+        Assert.assertTrue(uploadFileSection.getText().contains(file.getCanonicalFile().getName()));
     }
     @Test
+
     public void alert(){
         webDriver.get("https://the-internet.herokuapp.com/entry_ad");
         WebElement clickHere = webDriver.findElement(By.id("restart-ad"));
