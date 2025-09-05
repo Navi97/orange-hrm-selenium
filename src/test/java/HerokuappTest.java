@@ -2,26 +2,30 @@ import org.apache.commons.io.FileUtils;
 import org.example.pageObject.AddRemoveElementsPage;
 import org.example.pageObject.CheckboxPage;
 import org.example.pageObject.DropdownPage;
+import org.example.pageObject.FiledownloadPage;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+
+import static utils.FileUtility.waitForFileDownload;
 
 public class HerokuappTest {
     private WebDriver webDriver;
     AddRemoveElementsPage addRemoveElementsPage;
     DropdownPage dropdownPage;
     CheckboxPage checkboxPage;
+    FiledownloadPage filedownloadPage;
 
     @BeforeMethod
     public void before(){
@@ -31,6 +35,7 @@ public class HerokuappTest {
         addRemoveElementsPage = new AddRemoveElementsPage(webDriver);
         dropdownPage = new DropdownPage(webDriver);
         checkboxPage = new CheckboxPage(webDriver);
+        filedownloadPage = new FiledownloadPage(webDriver);
     }
     @Test
     public void addElement(){
@@ -55,44 +60,14 @@ public class HerokuappTest {
         checkboxPage.checkbox(1).click();
         Assert.assertTrue(checkboxPage.checkbox(1).isSelected());
     }
-    public File waitForFileDownload(String downloadPath, int timeoutSeconds) {
-        File dir = new File(downloadPath);
-        FluentWait<File> wait = new FluentWait<>(dir)
-                .withTimeout(Duration.ofSeconds(timeoutSeconds))
-                .pollingEvery(Duration.ofSeconds(5))
-                .ignoring(Exception.class);
-
-        return wait.until((file) -> {
-            File latest = getLatestModifiedFile(downloadPath);
-            return (latest != null && !latest.getName().endsWith(".crdownload")) && !latest.getName().startsWith(".com.google") ? latest : null;
-        });
-    }
     @Test
     public void filedownload() throws IOException {
-        webDriver.get("https://the-internet.herokuapp.com/download");
-        WebElement element = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/a[1]"));
-        String text = element.getText().split("\\.")[0];
-        System.out.println(text);
-        element.click();
-        String downloadPath = "/Users/vaishnavipukale/Downloads";
-        File file = waitForFileDownload(downloadPath , 15);
-        System.out.println(file.getCanonicalFile().getName());
-        Assert.assertTrue(file.getCanonicalFile().getName().contains(text));
-        System.out.println("File download successful ✅");
-    }
-    private File getLatestModifiedFile(String downloadPath) {
-        File dir = new File(downloadPath);
-        File[] files = dir.listFiles();
-        if((files == null) || (files.length == 0)){
-            return null;
-        }
-        File assumedFile = files[0];
-        for (File file : files) {
-            if (assumedFile.lastModified() < file.lastModified()) {
-                assumedFile = file;
-            }
-        }
-        return assumedFile;
+        filedownloadPage.visit();
+        WebElement link = filedownloadPage.link(1);
+        String text = link.getText().split("\\.")[0];
+        File file = filedownloadPage.download(link);
+        String downloadedFileName = file.getCanonicalFile().getName();
+        Assert.assertTrue(downloadedFileName.contains(text),"File download assertion failed: " + downloadedFileName + " " + text);
     }
     @Test
     public void fileUpload() {
