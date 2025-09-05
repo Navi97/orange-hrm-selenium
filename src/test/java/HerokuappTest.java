@@ -1,11 +1,11 @@
 import org.apache.commons.io.FileUtils;
 import org.example.pageObject.AddRemoveElementsPage;
+import org.example.pageObject.DropdownPage;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -19,6 +19,7 @@ import java.time.Duration;
 public class HerokuappTest {
     private WebDriver webDriver;
     AddRemoveElementsPage addRemoveElementsPage;
+    DropdownPage dropdownPage;
 
     @BeforeMethod
     public void before(){
@@ -26,6 +27,7 @@ public class HerokuappTest {
         webDriver.manage().window().maximize();
         webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         addRemoveElementsPage = new AddRemoveElementsPage(webDriver);
+        dropdownPage = new DropdownPage(webDriver);
     }
     @Test
     public void addElement(){
@@ -38,14 +40,10 @@ public class HerokuappTest {
     }
     @Test
     public void dropdown(){
-        webDriver.get("https://the-internet.herokuapp.com/dropdown");
-        System.out.println(webDriver.getTitle());
-        WebElement dropdownList = webDriver.findElement(By.id("dropdown"));
-        Select select = new Select(dropdownList);
-        select.selectByIndex(1);
-        String selectedOption = select.getFirstSelectedOption().getText();
-        System.out.println("Selected option is: " + selectedOption);
-        Assert.assertEquals(selectedOption, "Option 1", "Dropdown selection is not as expected!");
+        dropdownPage.visit();
+        System.out.println(dropdownPage.title());
+        String selectedOption = dropdownPage.selectOptions(2);
+        Assert.assertEquals(selectedOption, "Option 2", "Dropdown selection is not as expected!");
     }
     @Test
     public void checkbox(){
@@ -216,7 +214,6 @@ public class HerokuappTest {
         Actions actions = new Actions(webDriver);
         actions.scrollByAmount(0,500).perform();
     }
-
     @AfterMethod
     public void captureScreenshot(ITestResult result) {
         if (ITestResult.FAILURE == result.getStatus()) {
