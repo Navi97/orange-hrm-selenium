@@ -1,5 +1,6 @@
 import org.apache.commons.io.FileUtils;
 import org.example.pageObject.AddRemoveElementsPage;
+import org.example.pageObject.CheckboxPage;
 import org.example.pageObject.DropdownPage;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -20,6 +21,7 @@ public class HerokuappTest {
     private WebDriver webDriver;
     AddRemoveElementsPage addRemoveElementsPage;
     DropdownPage dropdownPage;
+    CheckboxPage checkboxPage;
 
     @BeforeMethod
     public void before(){
@@ -28,6 +30,7 @@ public class HerokuappTest {
         webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         addRemoveElementsPage = new AddRemoveElementsPage(webDriver);
         dropdownPage = new DropdownPage(webDriver);
+        checkboxPage = new CheckboxPage(webDriver);
     }
     @Test
     public void addElement(){
@@ -47,18 +50,10 @@ public class HerokuappTest {
     }
     @Test
     public void checkbox(){
-        webDriver.get("https://the-internet.herokuapp.com/checkboxes");
-        System.out.println(webDriver.getTitle());
-        WebElement checkbox1 = webDriver.findElement(By.xpath("//*[@id=\"checkboxes\"]/input[1]"));
-        checkbox1.click();
-        Assert.assertTrue(checkbox1.isSelected());
-        checkbox1.click();
-        Assert.assertFalse(checkbox1.isSelected());
-        WebElement checkbox2 = webDriver.findElement(By.xpath("//*[@id=\"checkboxes\"]/input[2]"));
-        checkbox2.click();
-        Assert.assertFalse(checkbox2.isSelected());
-        checkbox2.click();
-        Assert.assertTrue(checkbox2.isSelected());
+        checkboxPage.visit();
+        System.out.println(checkboxPage.title());
+        checkboxPage.checkbox(1).click();
+        Assert.assertTrue(checkboxPage.checkbox(1).isSelected());
     }
     public File waitForFileDownload(String downloadPath, int timeoutSeconds) {
         File dir = new File(downloadPath);
