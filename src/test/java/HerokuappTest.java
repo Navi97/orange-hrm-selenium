@@ -25,6 +25,7 @@ public class HerokuappTest {
     FiledownloadPage filedownloadPage;
     FileuploadPage fileuploadPage;
     AlertPage alertPage;
+    BrowserAlertPage browserAlertPage;
 
     @BeforeMethod
     public void before(){
@@ -37,6 +38,7 @@ public class HerokuappTest {
         filedownloadPage = new FiledownloadPage(webDriver);
         fileuploadPage = new FileuploadPage(webDriver);
         alertPage = new AlertPage(webDriver);
+        browserAlertPage = new BrowserAlertPage(webDriver);
     }
     @Test
     public void addElement(){
@@ -86,17 +88,12 @@ public class HerokuappTest {
         Assert.assertTrue(alertPage.modalInvisible(),"Modal didn't closed");
     }
     @Test
-    public void alert1(){
-        webDriver.get("https://the-internet.herokuapp.com/context_menu");
-        WebElement boxRightClick = webDriver.findElement(By.id("hot-spot"));
-        Actions actions = new Actions(webDriver);
-        actions.contextClick(boxRightClick).perform();
-        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.alertIsPresent());
-        Alert alert = webDriver.switchTo().alert();
-        System.out.println("Alert says: " + alert.getText());
-        alert.accept();
-        System.out.println("Alert closed successfully");
+    public void browserAlert(){
+        browserAlertPage.visit();
+        browserAlertPage.rightClickBox();
+        browserAlertPage.switchToAlert().accept();
+        browserAlertPage.verifyAlertInvisible();
+
     }
     @Test
     public void hover() {
