@@ -26,6 +26,7 @@ public class HerokuappTest {
     FileuploadPage fileuploadPage;
     AlertPage alertPage;
     BrowserAlertPage browserAlertPage;
+    HoverPage hoverPage;
 
     @BeforeMethod
     public void before(){
@@ -39,6 +40,7 @@ public class HerokuappTest {
         fileuploadPage = new FileuploadPage(webDriver);
         alertPage = new AlertPage(webDriver);
         browserAlertPage = new BrowserAlertPage(webDriver);
+        hoverPage = new HoverPage(webDriver);
     }
     @Test
     public void addElement(){
@@ -97,17 +99,10 @@ public class HerokuappTest {
     }
     @Test
     public void hover() {
-        webDriver.get("https://the-internet.herokuapp.com/hovers");
-        WebElement user1 = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/div[1]"));
-        Actions actions = new Actions(webDriver);
-        actions.moveToElement(user1).perform();
-        WebElement clickViewProfile = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/div[1]/div/a"));
-        clickViewProfile.click();
-        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(3));
-        WebElement notFoundMsg = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Not Found']"))
-        );
-        String actualText = notFoundMsg.getText();
+        hoverPage.visit();
+        hoverPage.hoverOnUser1();
+        hoverPage.viewProfile().click();
+        String actualText = hoverPage.notFoundMessage().getText();
         Assert.assertEquals(actualText, "Not Found", "Profile page did not show 'Not Found'");
     }
     @Test
@@ -182,7 +177,7 @@ public class HerokuappTest {
                 FileUtils.copyFile(src, new File(path));
                 System.out.println("📸 Screenshot saved: " + path);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Unable to capture screenshot" + e.getMessage());
             }
         }
         webDriver.quit();
