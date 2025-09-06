@@ -27,6 +27,7 @@ public class HerokuappTest {
     AlertPage alertPage;
     BrowserAlertPage browserAlertPage;
     HoverPage hoverPage;
+    KeyPressPage keyPressPage;
 
     @BeforeMethod
     public void before(){
@@ -41,6 +42,7 @@ public class HerokuappTest {
         alertPage = new AlertPage(webDriver);
         browserAlertPage = new BrowserAlertPage(webDriver);
         hoverPage = new HoverPage(webDriver);
+        keyPressPage = new KeyPressPage(webDriver);
     }
     @Test
     public void addElement(){
@@ -107,11 +109,9 @@ public class HerokuappTest {
     }
     @Test
     public void keyPresses(){
-        webDriver.get("https://the-internet.herokuapp.com/key_presses");
-        WebElement keyPress = webDriver.findElement(By.id("target"));
-        keyPress.sendKeys(Keys.TAB);
-        WebElement result = webDriver.findElement(By.id("result"));
-        Assert.assertEquals(result.getText(),"You entered: TAB");
+        keyPressPage.visit();
+        keyPressPage.keyPressSection().sendKeys(Keys.TAB);
+        Assert.assertEquals(keyPressPage.result().getText(),"You entered: TAB");
     }
     @Test
     public void javascriptAlert(){
