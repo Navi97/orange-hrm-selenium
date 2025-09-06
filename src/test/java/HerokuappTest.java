@@ -28,6 +28,7 @@ public class HerokuappTest {
     BrowserAlertPage browserAlertPage;
     HoverPage hoverPage;
     KeyPressPage keyPressPage;
+    JavascriptAlertPage javascriptAlertPage;
 
     @BeforeMethod
     public void before(){
@@ -43,7 +44,10 @@ public class HerokuappTest {
         browserAlertPage = new BrowserAlertPage(webDriver);
         hoverPage = new HoverPage(webDriver);
         keyPressPage = new KeyPressPage(webDriver);
+        javascriptAlertPage = new JavascriptAlertPage(webDriver);
+
     }
+
     @Test
     public void addElement(){
         addRemoveElementsPage.visit();
@@ -52,6 +56,7 @@ public class HerokuappTest {
         boolean isInvisible = addRemoveElementsPage.isInvisible(addRemoveElementsPage.removeButtonLocator());
         Assert.assertTrue(isInvisible, "Delete button should be invisible after clicking!");
     }
+
     @Test
     public void dropdown(){
         dropdownPage.visit();
@@ -59,6 +64,7 @@ public class HerokuappTest {
         String selectedOption = dropdownPage.selectOptions(2);
         Assert.assertEquals(selectedOption, "Option 2", "Dropdown selection is not as expected!");
     }
+
     @Test
     public void checkbox(){
         checkboxPage.visit();
@@ -66,6 +72,7 @@ public class HerokuappTest {
         checkboxPage.checkbox(1).click();
         Assert.assertTrue(checkboxPage.checkbox(1).isSelected());
     }
+
     @Test
     public void filedownload() throws IOException {
         filedownloadPage.visit();
@@ -75,6 +82,7 @@ public class HerokuappTest {
         String downloadedFileName = file.getCanonicalFile().getName();
         Assert.assertTrue(downloadedFileName.contains(text),"File download assertion failed: " + downloadedFileName + " " + text);
     }
+
     @Test
     public void fileUpload() throws IOException {
         fileuploadPage.visit();
@@ -83,6 +91,7 @@ public class HerokuappTest {
         WebElement uploadFileSection = fileuploadPage.uploadFileSection();
         Assert.assertTrue(uploadFileSection.getText().contains(file.getCanonicalFile().getName()));
     }
+
     @Test
     public void alert(){
         alertPage.visit();
@@ -91,6 +100,7 @@ public class HerokuappTest {
         alertPage.closeButton().click();
         Assert.assertTrue(alertPage.modalInvisible(),"Modal didn't closed");
     }
+
     @Test
     public void browserAlert(){
         browserAlertPage.visit();
@@ -99,6 +109,7 @@ public class HerokuappTest {
         browserAlertPage.verifyAlertInvisible();
 
     }
+
     @Test
     public void hover() {
         hoverPage.visit();
@@ -107,35 +118,40 @@ public class HerokuappTest {
         String actualText = hoverPage.notFoundMessage().getText();
         Assert.assertEquals(actualText, "Not Found", "Profile page did not show 'Not Found'");
     }
+
     @Test
     public void keyPresses(){
         keyPressPage.visit();
         keyPressPage.keyPressSection().sendKeys(Keys.TAB);
         Assert.assertEquals(keyPressPage.result().getText(),"You entered: TAB");
     }
+
     @Test
-    public void javascriptAlert(){
-        webDriver.get("https://the-internet.herokuapp.com/javascript_alerts");
-        WebElement jsAlert1 = webDriver.findElement(By.xpath("//button[text()='Click for JS Alert']"));
-        jsAlert1.click();
-        Alert alert = webDriver.switchTo().alert();
-        System.out.println("Alert says: " + alert.getText());
-        alert.accept();
-        System.out.println("Alert closed successfully");
-        WebElement result = webDriver.findElement(By.id("result"));
-        Assert.assertEquals(result.getText(),"You successfully clicked an alert");
-        WebElement jsAlert2 = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/ul/li[2]/button"));
-        jsAlert2.click();
-        Alert alert2 = webDriver.switchTo().alert();
-        alert2.dismiss();
-        Assert.assertEquals(result.getText(),"You clicked: Cancel");
-        WebElement jsAlert3 = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/ul/li[3]/button"));
-        jsAlert3.click();
-        Alert alert3 = webDriver.switchTo().alert();
-        alert3.sendKeys("Hello");
-        alert3.accept();
-        Assert.assertEquals(result.getText(),"You entered: Hello");
+    public void javascriptAcceptAlert(){
+        javascriptAlertPage.visit();
+        javascriptAlertPage.jsAlert1Section().click();
+        javascriptAlertPage.switchToAlert().accept();
+        Assert.assertEquals(javascriptAlertPage.result().getText(),"You successfully clicked an alert");
     }
+
+    @Test
+    public void javascriptDismissAlert(){
+        javascriptAlertPage.visit();
+        javascriptAlertPage.jsAlert2Section().click();
+        javascriptAlertPage.switchToAlert().dismiss();
+        Assert.assertEquals(javascriptAlertPage.result().getText(),"You clicked: Cancel");
+    }
+
+    @Test
+    public void javascriptAddTextAlert(){
+        javascriptAlertPage.visit();
+        javascriptAlertPage.jsAlert3Section().click();
+        javascriptAlertPage.switchToAlert().sendKeys("Hello");
+        javascriptAlertPage.switchToAlert().accept();
+        Assert.assertEquals(javascriptAlertPage.result().getText(),"You entered: Hello");
+
+    }
+
     @Test
     public void jQueryUi() throws IOException {
         webDriver.get("https://the-internet.herokuapp.com/jqueryui/menu#");
