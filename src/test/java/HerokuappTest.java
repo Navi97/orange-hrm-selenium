@@ -46,9 +46,9 @@ public class HerokuappTest {
     @Test
     public void addElement(){
         addRemoveElementsPage.visit();
-        addRemoveElementsPage.addButton().click();
-        addRemoveElementsPage.removeButton().click();
-        boolean isInvisible = addRemoveElementsPage.isInvisible(addRemoveElementsPage.removeButtonLocator());
+        addRemoveElementsPage.addButton.click();
+        addRemoveElementsPage.removeButton.click();
+        boolean isInvisible = addRemoveElementsPage.isInvisible(addRemoveElementsPage.removeButton);
         Assert.assertTrue(isInvisible, "Delete button should be invisible after clicking!");
     }
 

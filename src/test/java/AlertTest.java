@@ -28,9 +28,9 @@ public class AlertTest {
     @Test
     public void alert(){
         alertPage.visit();
-        alertPage.clickHereButton().click();
+        alertPage.clickHereButton.click();
         alertPage.modalVisible();
-        alertPage.closeButton().click();
+        alertPage.closeButton.click();
         Assert.assertTrue(alertPage.modalInvisible(),"Modal didn't closed");
     }
 

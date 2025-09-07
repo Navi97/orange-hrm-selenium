@@ -3,34 +3,29 @@ package org.example.pageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class AlertPage extends BasePage{
-    private String url;
+    @FindBy(id = "restart-ad")
+    public WebElement clickHereButton;
+    @FindBy(id = "modal")
+    private WebElement modal;
+    @FindBy(xpath = "//*[@id='modal']/div[2]/div[3]/p")
+    public WebElement closeButton;
 
     public AlertPage(WebDriver webDriver) {
-        super(webDriver);
-        this.url = super.baseUrl + "/entry_ad";
-    }
-
-    public void visit() {
-        super.webDriver.get(this.url);
-    }
-
-    public WebElement clickHereButton() {
-        return super.webDriver.findElement(By.id("restart-ad"));
+        super(webDriver, "/entry_ad");
+        PageFactory.initElements(webDriver,this);
     }
 
     public void modalVisible(){
-        super.wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal")));
-    }
-
-    public WebElement closeButton(){
-        return super.webDriver.findElement(By.xpath("//*[@id='modal']/div[2]/div[3]/p"));
+        super.wait.until(ExpectedConditions.visibilityOf(modal));
     }
 
     public Boolean modalInvisible(){
-        return super.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("modal")));
+        return super.wait.until(ExpectedConditions.invisibilityOf(modal));
     }
 
 }
