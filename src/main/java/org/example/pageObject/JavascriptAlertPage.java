@@ -1,39 +1,27 @@
 package org.example.pageObject;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 public class JavascriptAlertPage extends BasePage {
-    private final String url;
+
+    @FindBy(xpath = "//button[text()='Click for JS Alert']")
+    public WebElement jsAlert1Section;
+
+    @FindBy(id = "result")
+    public WebElement result;
+
+    @FindBy(xpath = "//*[@id=\"content\"]/div/ul/li[2]/button")
+    public WebElement jsAlert2Section;
+
+    @FindBy(xpath = "//*[@id=\"content\"]/div/ul/li[3]/button")
+    public WebElement jsAlert3Section;
 
     public JavascriptAlertPage(WebDriver webDriver) {
-        super(webDriver);
-        this.url = baseUrl + "/javascript_alerts";
+        super(webDriver,"/javascript_alerts");
+        PageFactory.initElements(webDriver,this);
     }
 
-    public void visit(){
-        super.webDriver.get(this.url);
-    }
-
-    public WebElement jsAlert1Section() {
-        return super.webDriver.findElement(By.xpath("//button[text()='Click for JS Alert']"));
-    }
-
-    public Alert switchToAlert() {
-        return super.webDriver.switchTo().alert();
-    }
-
-    public WebElement result(){
-        return super.webDriver.findElement(By.id("result"));
-    }
-
-    public WebElement jsAlert2Section() {
-        return super.webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/ul/li[2]/button"));
-    }
-
-    public WebElement jsAlert3Section(){
-        return super.webDriver.findElement(By.xpath("//*[@id=\"content\"]/div/ul/li[3]/button"));
-    }
 }

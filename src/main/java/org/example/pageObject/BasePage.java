@@ -1,6 +1,8 @@
 package org.example.pageObject;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -29,5 +31,13 @@ public class BasePage {
 
     public void visit() {
         this.webDriver.get(this.baseUrl);
+    }
+
+    public Actions actions(){
+        return new Actions(this.webDriver);
+    }
+
+    public Alert switchToAlert() {
+        return this.webDriver.switchTo().alert();
     }
 }

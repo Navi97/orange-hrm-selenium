@@ -8,17 +8,11 @@ import java.io.File;
 
 import static utils.FileUtility.waitForFileDownload;
 
-public class FiledownloadPage {
-    private final WebDriver webDriver;
-    private String url;
+public class FiledownloadPage extends BasePage {
+
 
     public FiledownloadPage(WebDriver webDriver) {
-        this.url = "https://the-internet.herokuapp.com/download";
-        this.webDriver = webDriver;
-    }
-
-    public void visit() {
-        this.webDriver.get(this.url);
+        super(webDriver,"/download");
     }
 
     public WebElement link(int index) {
@@ -26,7 +20,6 @@ public class FiledownloadPage {
         By xpath = By.xpath(format);
         return webDriver.findElement(xpath);
     }
-
 
     public File download(WebElement link) {
         link.click();

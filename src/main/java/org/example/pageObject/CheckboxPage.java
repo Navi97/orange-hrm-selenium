@@ -4,21 +4,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class CheckboxPage {
-    private final WebDriver webDriver;
-    private final String url;
+public class CheckboxPage extends BasePage{
+
 
     public CheckboxPage(WebDriver webDriver) {
-        this.url = "https://the-internet.herokuapp.com/checkboxes";
-        this.webDriver = webDriver;
-    }
+        super(webDriver,"/checkboxes");
 
-    public void visit() {
-        this.webDriver.get(this.url);
-    }
-
-    public String title() {
-        return this.webDriver.getTitle();
     }
 
     public WebElement checkbox(int index) {

@@ -83,15 +83,15 @@ public class HerokuappTest {
         fileuploadPage.visit();
         File file = new File(  "src/main/resources/menu.pdf");
         fileuploadPage.upload(file);
-        WebElement uploadFileSection = fileuploadPage.uploadFileSection();
+        WebElement uploadFileSection = fileuploadPage.uploadFileSection;
         Assert.assertTrue(uploadFileSection.getText().contains(file.getCanonicalFile().getName()));
     }
 
     @Test
     public void hover() {
         hoverPage.visit();
-        hoverPage.hoverOnUser1();
-        hoverPage.viewProfile().click();
+        hoverPage.actions().moveToElement(hoverPage.user1).perform();
+        hoverPage.viewProfile.click();
         String actualText = hoverPage.notFoundMessage().getText();
         Assert.assertEquals(actualText, "Not Found", "Profile page did not show 'Not Found'");
     }
@@ -99,42 +99,45 @@ public class HerokuappTest {
     @Test
     public void keyPresses(){
         keyPressPage.visit();
-        keyPressPage.keyPressSection().sendKeys(Keys.TAB);
-        Assert.assertEquals(keyPressPage.result().getText(),"You entered: TAB");
+        keyPressPage.keyPressSection.sendKeys(Keys.TAB);
+        Assert.assertEquals(keyPressPage.result.getText(),"You entered: TAB");
     }
 
     @Test
     public void javascriptAcceptAlert(){
         javascriptAlertPage.visit();
-        javascriptAlertPage.jsAlert1Section().click();
+        javascriptAlertPage.jsAlert1Section.click();
         javascriptAlertPage.switchToAlert().accept();
-        Assert.assertEquals(javascriptAlertPage.result().getText(),"You successfully clicked an alert");
+        Assert.assertEquals(javascriptAlertPage.result.getText(),"You successfully clicked an alert");
     }
 
     @Test
     public void javascriptDismissAlert(){
         javascriptAlertPage.visit();
-        javascriptAlertPage.jsAlert2Section().click();
+        javascriptAlertPage.jsAlert2Section.click();
         javascriptAlertPage.switchToAlert().dismiss();
-        Assert.assertEquals(javascriptAlertPage.result().getText(),"You clicked: Cancel");
+        Assert.assertEquals(javascriptAlertPage.result.getText(),"You clicked: Cancel");
     }
 
     @Test
     public void javascriptAddTextAlert(){
         javascriptAlertPage.visit();
-        javascriptAlertPage.jsAlert3Section().click();
+        javascriptAlertPage.jsAlert3Section.click();
         javascriptAlertPage.switchToAlert().sendKeys("Hello");
         javascriptAlertPage.switchToAlert().accept();
-        Assert.assertEquals(javascriptAlertPage.result().getText(),"You entered: Hello");
+        Assert.assertEquals(javascriptAlertPage.result.getText(),"You entered: Hello");
     }
 
     @Test
     public void nestedDropdownMenu() throws IOException {
         nestedDropdownMenuPage.visit();
-        nestedDropdownMenuPage.moveToElement(nestedDropdownMenuPage.dropdownEnable());
-        nestedDropdownMenuPage.moveToElement(nestedDropdownMenuPage.dropdownDownload());
+        nestedDropdownMenuPage.actions()
+                .moveToElement(nestedDropdownMenuPage.dropdownEnable).perform();
+        nestedDropdownMenuPage.actions()
+                .moveToElement(nestedDropdownMenuPage.dropdownDownload()).perform();
         WebElement pdf = nestedDropdownMenuPage.dropdownPdf();
-        nestedDropdownMenuPage.moveToElement(pdf);
+        nestedDropdownMenuPage.actions()
+                .moveToElement(pdf);
         File file = nestedDropdownMenuPage.download(pdf);
         Assert.assertTrue(file.getCanonicalFile().getName().contains("menu"));
     }
@@ -142,15 +145,15 @@ public class HerokuappTest {
     @Test
     public void dragAndDrop(){
         dragandDropPage.visit();
-        dragandDropPage.columnASection();
-        dragandDropPage.columnBSection();
-        dragandDropPage.dragAndDropAction().dragAndDrop( dragandDropPage.columnASection(),dragandDropPage.columnBSection()).perform();
+        dragandDropPage.actions()
+                .dragAndDrop( dragandDropPage.columnA,dragandDropPage.columnB)
+                .perform();
     }
 
     @Test
     public void scroll(){
         scrollPage.visit();
-        scrollPage.scrollAction().scrollByAmount(0,500).perform();
+        scrollPage.actions().scrollByAmount(0,500).perform();
     }
 
     @AfterMethod
