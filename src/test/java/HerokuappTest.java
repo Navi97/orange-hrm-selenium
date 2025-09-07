@@ -3,8 +3,6 @@ import org.example.pageObject.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
@@ -29,6 +27,9 @@ public class HerokuappTest {
     HoverPage hoverPage;
     KeyPressPage keyPressPage;
     JavascriptAlertPage javascriptAlertPage;
+    NestedDropdownMenuPage nestedDropdownMenuPage;
+    DragandDropPage dragandDropPage;
+    ScrollPage scrollPage;
 
     @BeforeMethod
     public void before(){
@@ -45,6 +46,9 @@ public class HerokuappTest {
         hoverPage = new HoverPage(webDriver);
         keyPressPage = new KeyPressPage(webDriver);
         javascriptAlertPage = new JavascriptAlertPage(webDriver);
+        nestedDropdownMenuPage = new NestedDropdownMenuPage(webDriver);
+        dragandDropPage = new DragandDropPage(webDriver);
+        scrollPage = new ScrollPage(webDriver);
 
     }
 
@@ -107,7 +111,6 @@ public class HerokuappTest {
         browserAlertPage.rightClickBox();
         browserAlertPage.switchToAlert().accept();
         browserAlertPage.verifyAlertInvisible();
-
     }
 
     @Test
@@ -149,40 +152,33 @@ public class HerokuappTest {
         javascriptAlertPage.switchToAlert().sendKeys("Hello");
         javascriptAlertPage.switchToAlert().accept();
         Assert.assertEquals(javascriptAlertPage.result().getText(),"You entered: Hello");
-
     }
 
     @Test
-    public void jQueryUi() throws IOException {
-        webDriver.get("https://the-internet.herokuapp.com/jqueryui/menu#");
-        Actions actions = new Actions(webDriver);
-        WebElement clickEnable = webDriver.findElement(By.id("ui-id-3"));
-        actions.moveToElement(clickEnable).perform();
-        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
-        WebElement clickDownloads = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ui-id-4")));
-        actions.moveToElement(clickDownloads).perform();
-        WebElement clickPdf = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ui-id-5")));
-        clickPdf.click();
-        String downloadPath = "/Users/vaishnavipukale/Downloads";
-        File file = waitForFileDownload(downloadPath , 15);
-        System.out.println(file.getCanonicalFile().getName());
+    public void nestedDropdownMenu() throws IOException {
+        nestedDropdownMenuPage.visit();
+        nestedDropdownMenuPage.moveToElement(nestedDropdownMenuPage.dropdownEnable());
+        nestedDropdownMenuPage.moveToElement(nestedDropdownMenuPage.dropdownDownload());
+        WebElement pdf = nestedDropdownMenuPage.dropdownPdf();
+        nestedDropdownMenuPage.moveToElement(pdf);
+        File file = nestedDropdownMenuPage.download(pdf);
         Assert.assertTrue(file.getCanonicalFile().getName().contains("menu"));
-        System.out.println("File download successful ✅");
     }
+
     @Test
     public void dragAndDrop(){
-        webDriver.get("https://the-internet.herokuapp.com/drag_and_drop");
-        WebElement columnA = webDriver.findElement(By.id("column-a"));
-        WebElement columnB = webDriver.findElement(By.id("column-b"));
-        Actions actions = new Actions(webDriver);
-        actions.dragAndDrop(columnA,columnB).perform();
+        dragandDropPage.visit();
+        dragandDropPage.columnASection();
+        dragandDropPage.columnBSection();
+        dragandDropPage.dragAndDropAction().dragAndDrop( dragandDropPage.columnASection(),dragandDropPage.columnBSection()).perform();
     }
+
     @Test
     public void scroll(){
-        webDriver.get("https://the-internet.herokuapp.com/infinite_scroll");
-        Actions actions = new Actions(webDriver);
-        actions.scrollByAmount(0,500).perform();
+        scrollPage.visit();
+        scrollPage.scrollAction().scrollByAmount(0,500).perform();
     }
+
     @AfterMethod
     public void captureScreenshot(ITestResult result) {
         if (ITestResult.FAILURE == result.getStatus()) {
