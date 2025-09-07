@@ -2,7 +2,6 @@ import org.apache.commons.io.FileUtils;
 import org.example.pageObject.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
@@ -13,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 
-import static utils.FileUtility.waitForFileDownload;
 
 public class HerokuappTest {
     private WebDriver webDriver;
