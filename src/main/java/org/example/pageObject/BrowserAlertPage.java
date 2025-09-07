@@ -23,10 +23,6 @@ public class BrowserAlertPage extends BasePage {
         super.wait.until(ExpectedConditions.alertIsPresent());
     }
 
-    public Alert switchToAlert(){
-        return super.webDriver.switchTo().alert();
-    }
-
     public void verifyAlertInvisible(){
         super.wait.until(ExpectedConditions.not(ExpectedConditions.alertIsPresent()));
     }
