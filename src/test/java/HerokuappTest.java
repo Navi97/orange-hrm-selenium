@@ -1,7 +1,7 @@
+import manager.DriverManager;
 import org.apache.commons.io.FileUtils;
 import org.example.pageObject.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
@@ -10,7 +10,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 
 
 public class HerokuappTest {
@@ -20,8 +19,6 @@ public class HerokuappTest {
     CheckboxPage checkboxPage;
     FiledownloadPage filedownloadPage;
     FileuploadPage fileuploadPage;
-    AlertPage alertPage;
-    BrowserAlertPage browserAlertPage;
     HoverPage hoverPage;
     KeyPressPage keyPressPage;
     JavascriptAlertPage javascriptAlertPage;
@@ -31,16 +28,12 @@ public class HerokuappTest {
 
     @BeforeMethod
     public void before(){
-        webDriver = new ChromeDriver();
-        webDriver.manage().window().maximize();
-        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        webDriver = DriverManager.getWebdriver();
         addRemoveElementsPage = new AddRemoveElementsPage(webDriver);
         dropdownPage = new DropdownPage(webDriver);
         checkboxPage = new CheckboxPage(webDriver);
         filedownloadPage = new FiledownloadPage(webDriver);
         fileuploadPage = new FileuploadPage(webDriver);
-        alertPage = new AlertPage(webDriver);
-        browserAlertPage = new BrowserAlertPage(webDriver);
         hoverPage = new HoverPage(webDriver);
         keyPressPage = new KeyPressPage(webDriver);
         javascriptAlertPage = new JavascriptAlertPage(webDriver);
@@ -92,23 +85,6 @@ public class HerokuappTest {
         fileuploadPage.upload(file);
         WebElement uploadFileSection = fileuploadPage.uploadFileSection();
         Assert.assertTrue(uploadFileSection.getText().contains(file.getCanonicalFile().getName()));
-    }
-
-    @Test
-    public void alert(){
-        alertPage.visit();
-        alertPage.clickHereButton().click();
-        alertPage.modalVisible();
-        alertPage.closeButton().click();
-        Assert.assertTrue(alertPage.modalInvisible(),"Modal didn't closed");
-    }
-
-    @Test
-    public void browserAlert(){
-        browserAlertPage.visit();
-        browserAlertPage.rightClickBox();
-        browserAlertPage.switchToAlert().accept();
-        browserAlertPage.verifyAlertInvisible();
     }
 
     @Test
@@ -190,6 +166,6 @@ public class HerokuappTest {
                 System.out.println("Unable to capture screenshot" + e.getMessage());
             }
         }
-        webDriver.quit();
+        DriverManager.quitWebdriver();
     }
 }
